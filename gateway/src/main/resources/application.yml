@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: gateway
+  ##GATEWAY CONFIGURATIONS
+  cloud:
+    gateway:
+      routes:
+        ## Authorization
+        - id: authorization
+          uri: lb://authorization
+          predicates:
+            - Path=/authorization/**
+          filters:
+            - StripPrefix=1
+        ## Reservation
+        - id: activities-events
+          uri: lb://activities-events
+          predicates:
+            - Path=/activities-events/**
+          filters:
+            - StripPrefix=1
+        ## rating
+        - id: hotel-accomodation
+          uri: lb://hotel-accomodation
+          predicates:
+            - Path=/hotel-accomodation/**
+          filters:
+            - StripPrefix=1
+        ## rastaurant-bar
+        - id: rastarant-bar
+          uri: lb://rastarant-bar
+          predicates:
+            - Path=/rastarant-bar/**
+          filters:
+            - StripPrefix=1
+        ## non-tourist
+        - id: non-tourist
+          uri: lb://non-tourist
+          predicates:
+            - Path=/non-tourist/**
+          filters:
+            - StripPrefix=1
+server:
+  port: 8090
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
