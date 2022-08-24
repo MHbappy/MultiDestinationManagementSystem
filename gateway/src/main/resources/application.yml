@@ -40,6 +40,19 @@ spring:
             - Path=/non-tourist/**
           filters:
             - StripPrefix=1
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: '*'
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+            allowed-headers: '*'
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin, RETAIN_FIRST
 server:
   port: 8090
 
