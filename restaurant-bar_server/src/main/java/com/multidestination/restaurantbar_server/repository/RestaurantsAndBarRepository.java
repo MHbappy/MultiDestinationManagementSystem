@@ -17,6 +17,6 @@ public interface RestaurantsAndBarRepository extends JpaRepository<RestaurantsAn
             "AND u.username = ?1", nativeQuery = true)
     List<Long> getAllCitiesByUserName(String userName);
 
-    @Query(value = "select * from hotel_and_accomodation where cities_id in (?1)", nativeQuery = true)
+    @Query(value = "select * from restaurants_and_bar where cities_id in (?1)", nativeQuery = true)
     List<RestaurantsAndBar> getAllByCities(List<Long> cities);
 }

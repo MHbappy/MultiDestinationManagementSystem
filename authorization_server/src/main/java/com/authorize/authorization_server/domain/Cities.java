@@ -15,4 +15,7 @@ public class Cities {
     private Long id;
 
     String name;
+
+    boolean isActive;
+
 }
