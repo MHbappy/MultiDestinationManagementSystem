@@ -17,11 +17,13 @@ public interface ActivitiesEventRepository extends JpaRepository<ActivitiesEvent
     Long getUserIdByUserName(String userName);
 
     @Query(value = "select c.id from users u, user_cities uc, cities c " +
-            "where u.id = uc.user_id AND uc.cities_id = c.id " +
-            "AND u.username = ?1", nativeQuery = true)
-    List<Long> getAllCitiesByUserName(String userName);
+            "where u.id = uc.user_id AND uc.cities_id = c.id AND c.is_active = ?1 " +
+            "AND u.username = ?2", nativeQuery = true)
+    List<Long> getAllCitiesByUserName(Boolean isActive, String userName);
 
-    @Query(value = "select * from hotel_and_accomodation where cities_id in (?1)", nativeQuery = true)
-    List<ActivitiesEvent> getAllByCities(List<Long> cities);
+    @Query(value = "select * from hotel_and_accomodation where is_active = ?1 cities_id in (?2)", nativeQuery = true)
+    List<ActivitiesEvent> getAllByCities(Boolean isActive, List<Long> cities);
+
+    List<ActivitiesEvent> findAllByIsActive(Boolean isActive);
 
 }

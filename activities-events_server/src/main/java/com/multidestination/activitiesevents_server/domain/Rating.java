@@ -10,4 +10,5 @@ public class Rating {
     private Long userId;
     private String comment;
     private Integer score;
+    private Long reservationId;
 }

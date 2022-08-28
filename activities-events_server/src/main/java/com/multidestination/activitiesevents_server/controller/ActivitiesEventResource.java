@@ -18,10 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -42,6 +39,7 @@ public class ActivitiesEventResource {
         if (activitiesEvent.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new activitiesEvent cannot already have an ID");
         }
+        activitiesEvent.setIsActive(true);
         ActivitiesEvent result = activitiesEventRepository.save(activitiesEvent);
         return ResponseEntity
                 .created(new URI("/api/activities-events/" + result.getId()))
@@ -66,7 +64,7 @@ public class ActivitiesEventResource {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entity not found");
 
         }
-
+        activitiesEvent.setIsActive(true);
         ActivitiesEvent result = activitiesEventRepository.save(activitiesEvent);
         return ResponseEntity
                 .ok()
@@ -76,7 +74,7 @@ public class ActivitiesEventResource {
     @GetMapping("/activities-events")
     public List<ActivitiesEvent> getAllActivitiesEvents() {
         log.debug("REST request to get all ActivitiesEvents");
-        return activitiesEventRepository.findAll();
+        return activitiesEventRepository.findAllByIsActive(true);
     }
 
 
@@ -91,7 +89,9 @@ public class ActivitiesEventResource {
     @DeleteMapping("/activities-events/{id}")
     public ResponseEntity<Void> deleteActivitiesEvent(@PathVariable Long id) {
         log.debug("REST request to delete ActivitiesEvent : {}", id);
-        activitiesEventRepository.deleteById(id);
+        Optional<ActivitiesEvent> activitiesEvent = activitiesEventRepository.findById(id);
+        activitiesEvent.get().setIsActive(false);
+        activitiesEventRepository.save(activitiesEvent.get());
         return ResponseEntity
                 .noContent()
                 .build();
@@ -106,6 +106,18 @@ public class ActivitiesEventResource {
         return result;
     }
 
+    @GetMapping("/all-reservation-by-user-id")
+    public List<Reservation> getAllReservationByUserId(){
+//        reservation.setUserId(getUserIdFromUserName());
+        String randomServerPort = "8082";
+        final String baseUrl = "http://localhost:"+randomServerPort+"/api/reservations-by-user-id/" + getUserIdFromUserName();
+        Reservation[] result = new RestTemplate().getForObject(baseUrl, Reservation[].class);
+        List<Reservation> reservations= Arrays.asList(result);
+        return reservations;
+    }
+
+//    List<Reservation>
+
     @PostMapping("/user-ratings")
     public ResponseEntity<Rating> rating(@RequestBody RatingRequest ratingRequest){
         Rating rating = new Rating();
@@ -118,15 +130,26 @@ public class ActivitiesEventResource {
         return result;
     }
 
+
+    @GetMapping("/ratings-by-reservation-id/{reservationId}")
+    public List<Rating> getAllRatingsByReservation(@PathVariable Long reservationId){
+//        reservation.setUserId(getUserIdFromUserName());
+        String randomServerPort = "8083";
+        final String baseUrl = "http://localhost:"+randomServerPort+"/api/ratings-by-reservation-id/" + reservationId;
+        Rating[] result = new RestTemplate().getForObject(baseUrl, Rating[].class);
+        List<Rating> reservations= Arrays.asList(result);
+        return reservations;
+    }
+
     @GetMapping("/activities-events-with-cities")
     public List<ActivitiesEvent> getAllHotelAndAccomodationsByCities() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName = auth.getName();
 
         List<ActivitiesEvent> activitiesEvents = new ArrayList<>();
-        List<Long> cityList = activitiesEventRepository.getAllCitiesByUserName(userName);
+        List<Long> cityList = activitiesEventRepository.getAllCitiesByUserName(true, userName);
         if (cityList != null & cityList.size() > 0){
-            activitiesEvents = activitiesEventRepository.getAllByCities(cityList);
+            activitiesEvents = activitiesEventRepository.getAllByCities(true, cityList);
         }
         return activitiesEvents;
     }

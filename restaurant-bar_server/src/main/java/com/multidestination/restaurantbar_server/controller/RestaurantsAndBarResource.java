@@ -41,6 +41,8 @@ public class RestaurantsAndBarResource {
         if (restaurantsAndBar.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new activitiesEvent cannot already have an ID");
         }
+
+        restaurantsAndBar.setIsActive(true);
         RestaurantsAndBar result = restaurantsAndBarRepository.save(restaurantsAndBar);
         return ResponseEntity
             .created(new URI("/api/restaurants-and-bars/" + result.getId()))
@@ -64,7 +66,7 @@ public class RestaurantsAndBarResource {
         if (!restaurantsAndBarRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entity not found");
         }
-
+        restaurantsAndBar.setIsActive(true);
         RestaurantsAndBar result = restaurantsAndBarRepository.save(restaurantsAndBar);
         return ResponseEntity
             .ok()
@@ -74,7 +76,7 @@ public class RestaurantsAndBarResource {
     @GetMapping("/restaurants-and-bars")
     public List<RestaurantsAndBar> getAllRestaurantsAndBars() {
         log.debug("REST request to get all RestaurantsAndBars");
-        return restaurantsAndBarRepository.findAll();
+        return restaurantsAndBarRepository.findAllByIsActive(true);
     }
 
     @GetMapping("/restaurants-and-bars/{id}")
@@ -88,7 +90,12 @@ public class RestaurantsAndBarResource {
     @DeleteMapping("/restaurants-and-bars/{id}")
     public ResponseEntity<Void> deleteRestaurantsAndBar(@PathVariable Long id) {
         log.debug("REST request to delete RestaurantsAndBar : {}", id);
-        restaurantsAndBarRepository.deleteById(id);
+
+        Optional<RestaurantsAndBar> restaurantsAndBar = restaurantsAndBarRepository.findById(id);
+        restaurantsAndBar.get().setIsActive(false);
+        restaurantsAndBarRepository.save(restaurantsAndBar.get());
+
+//      restaurantsAndBarRepository.deleteById(id);
         return ResponseEntity
             .noContent()
             .build();
@@ -100,9 +107,9 @@ public class RestaurantsAndBarResource {
         String userName = auth.getName();
 
         List<RestaurantsAndBar> restaurantsAndBars = new ArrayList<>();
-        List<Long> cityList = restaurantsAndBarRepository.getAllCitiesByUserName(userName);
+        List<Long> cityList = restaurantsAndBarRepository.getAllCitiesByUserName(userName, true);
         if (cityList != null & cityList.size() > 0){
-            restaurantsAndBars = restaurantsAndBarRepository.getAllByCities(cityList);
+            restaurantsAndBars = restaurantsAndBarRepository.getAllByCities(true, cityList);
         }
         return restaurantsAndBars;
     }

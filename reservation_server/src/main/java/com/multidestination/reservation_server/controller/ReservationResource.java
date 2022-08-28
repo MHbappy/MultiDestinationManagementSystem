@@ -68,6 +68,12 @@ public class ReservationResource {
         return reservationRepository.findAll();
     }
 
+    @GetMapping("/reservations-by-user-id/{userId}")
+    public List<Reservation> getReservationsByUserId(@PathVariable(value = "userId", required = false) final Long userId) {
+        log.debug("REST request to get all Reservations");
+        return reservationRepository.findAllByUserId(userId);
+    }
+
     @GetMapping("/reservations/{id}")
     public ResponseEntity<Reservation> getReservation(@PathVariable Long id) {
         log.debug("REST request to get Reservation : {}", id);

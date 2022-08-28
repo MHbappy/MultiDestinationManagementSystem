@@ -6,4 +6,5 @@ import lombok.Data;
 public class RatingRequest {
     private String comment;
     private Integer score;
+    private Long reservationId;
 }

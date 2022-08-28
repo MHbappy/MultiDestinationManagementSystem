@@ -47,4 +47,6 @@ public class ActivitiesEvent {
 
     @ManyToOne
     private Cities cities;
+
+    Boolean isActive;
 }

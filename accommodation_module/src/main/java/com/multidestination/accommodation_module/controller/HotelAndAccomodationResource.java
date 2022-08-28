@@ -39,6 +39,7 @@ public class HotelAndAccomodationResource {
         if (hotelAndAccomodation.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new activitiesEvent cannot already have an ID");
         }
+        hotelAndAccomodation.setIsActive(true);
         HotelAndAccomodation result = hotelAndAccomodationRepository.save(hotelAndAccomodation);
         return ResponseEntity
                 .created(new URI("/api/hotel-and-accomodations/" + result.getId()))
@@ -62,6 +63,8 @@ public class HotelAndAccomodationResource {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entity not found");
         }
 
+        hotelAndAccomodation.setIsActive(true);
+
         HotelAndAccomodation result = hotelAndAccomodationRepository.save(hotelAndAccomodation);
         return ResponseEntity
                 .ok()
@@ -71,7 +74,7 @@ public class HotelAndAccomodationResource {
     @GetMapping("/hotel-and-accomodations")
     public List<HotelAndAccomodation> getAllHotelAndAccomodations() {
         log.debug("REST request to get all Hotel And Accomodations");
-        return hotelAndAccomodationRepository.findAll();
+        return hotelAndAccomodationRepository.findAllByIsActive(true);
     }
 
     @GetMapping("/hotel-and-accomodations-with-cities")
@@ -79,9 +82,9 @@ public class HotelAndAccomodationResource {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName = auth.getName();
         List<HotelAndAccomodation> hotelAndAccomodations = new ArrayList<>();
-        List<Long> cityList = hotelAndAccomodationRepository.getAllCitiesByUserName(userName);
+        List<Long> cityList = hotelAndAccomodationRepository.getAllCitiesByUserName(userName, true);
         if (cityList != null & cityList.size() > 0){
-            hotelAndAccomodations = hotelAndAccomodationRepository.getAllByCities(cityList);
+            hotelAndAccomodations = hotelAndAccomodationRepository.getAllByCities(true, cityList);
         }
         return hotelAndAccomodations;
     }
@@ -97,7 +100,13 @@ public class HotelAndAccomodationResource {
     @DeleteMapping("/hotel-and-accomodations/{id}")
     public ResponseEntity<Void> deleteHotelAndAccomodation(@PathVariable Long id) {
         log.debug("REST request to delete HotelAndAccomodation : {}", id);
-        hotelAndAccomodationRepository.deleteById(id);
+
+        Optional<HotelAndAccomodation> hotelAndAccomodation = hotelAndAccomodationRepository.findById(id);
+        hotelAndAccomodation.get().setIsActive(false);
+        hotelAndAccomodationRepository.save(hotelAndAccomodation.get());
+//        HotelAndAccomodation result = hotelAndAccomodationRepository.save(hotelAndAccomodation);
+
+//        hotelAndAccomodationRepository.deleteById(id);
         return ResponseEntity
                 .noContent()
                 .build();

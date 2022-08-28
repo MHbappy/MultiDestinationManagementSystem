@@ -47,4 +47,6 @@ public class RestaurantsAndBar {
 
     @ManyToOne
     private Cities cities;
+
+    private Boolean isActive;
 }

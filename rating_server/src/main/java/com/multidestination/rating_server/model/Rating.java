@@ -17,6 +17,9 @@ public class Rating {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(name = "reservation_id")
+    private Long reservationId;
+
     @Column(name = "comment")
     private String comment;
 

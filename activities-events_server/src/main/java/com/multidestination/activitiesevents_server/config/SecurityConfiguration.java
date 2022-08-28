@@ -44,6 +44,7 @@ public class SecurityConfiguration extends ResourceServerConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(
+                        "/api/ratings-by-reservation-id/**",
                         "/v2/api-docs",
                         "/swagger-resources/**",
                         "/swagger-ui/**",

@@ -34,6 +34,7 @@ public class CityController {
         if (cities.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A city cannot already have an ID");
         }
+        cities.setIsActive(true);
         Cities result = cityRepository.save(cities);
         return ResponseEntity.ok(result);
     }
@@ -56,7 +57,7 @@ public class CityController {
         if (!cityRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entity not found");
         }
-
+        cities.setIsActive(true);
         Cities result = cityRepository.save(cities);
         return ResponseEntity
                 .ok()
@@ -66,7 +67,7 @@ public class CityController {
     @GetMapping("/cities-list")
     public List<Cities> getAllCities() {
         log.debug("REST request to get all cities");
-        return cityRepository.findAll();
+        return cityRepository.findAllByIsActive(true);
     }
 
     @GetMapping("/cities/{id}")

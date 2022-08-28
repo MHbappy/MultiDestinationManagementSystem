@@ -41,4 +41,6 @@ public class HotelAndAccomodation {
 
     @ManyToOne
     private Cities cities;
+
+    private Boolean isActive;
 }

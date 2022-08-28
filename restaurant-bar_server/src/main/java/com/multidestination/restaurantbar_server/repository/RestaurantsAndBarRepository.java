@@ -14,9 +14,13 @@ import java.util.List;
 public interface RestaurantsAndBarRepository extends JpaRepository<RestaurantsAndBar, Long> {
     @Query(value = "select c.id from users u, user_cities uc, cities c " +
             "where u.id = uc.user_id AND uc.cities_id = c.id " +
-            "AND u.username = ?1", nativeQuery = true)
-    List<Long> getAllCitiesByUserName(String userName);
+            "AND u.username = ?1 AND c.is_active = ?2", nativeQuery = true)
+    List<Long> getAllCitiesByUserName(String userName, Boolean isActive);
 
-    @Query(value = "select * from restaurants_and_bar where cities_id in (?1)", nativeQuery = true)
-    List<RestaurantsAndBar> getAllByCities(List<Long> cities);
+    @Query(value = "select * from restaurants_and_bar where is_active = ?1 AND cities_id in (?2)", nativeQuery = true)
+    List<RestaurantsAndBar> getAllByCities(Boolean isActive, List<Long> cities);
+
+    List<RestaurantsAndBar> findAllByIsActive(Boolean isActive);
+
+
 }

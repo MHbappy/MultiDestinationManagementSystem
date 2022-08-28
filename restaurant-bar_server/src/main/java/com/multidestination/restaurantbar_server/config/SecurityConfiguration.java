@@ -39,6 +39,8 @@ public class SecurityConfiguration extends ResourceServerConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(
+                        "/api/restaurants-and-bars",
+                        "/api/cities-list",
                         "/v2/api-docs",
                         "/swagger-resources/**",
                         "/swagger-ui/**",
