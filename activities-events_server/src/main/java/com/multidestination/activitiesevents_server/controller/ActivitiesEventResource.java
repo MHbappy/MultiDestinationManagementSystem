@@ -116,10 +116,17 @@ public class ActivitiesEventResource {
     }
 
     @GetMapping("/all-reservation-by-user-id")
-    public List<Reservation> getAllReservationByUserId(){
+    public List<Reservation> getAllReservationByUserId(@RequestParam(required = false) Long userId){
 //        reservation.setUserId(getUserIdFromUserName());
+        Long finalUserId = 0l;
+        if (userId == null || userId == 0){
+            finalUserId = getUserIdFromUserName();
+        }else {
+            finalUserId = userId;
+        }
+
         String randomServerPort = "8082";
-        final String baseUrl = "http://localhost:"+randomServerPort+"/api/reservations-by-user-id/" + getUserIdFromUserName();
+        final String baseUrl = "http://localhost:"+randomServerPort+"/api/reservations-by-user-id/" + finalUserId;
         Reservation[] result = new RestTemplate().getForObject(baseUrl, Reservation[].class);
         List<Reservation> reservations= Arrays.asList(result);
         return reservations;

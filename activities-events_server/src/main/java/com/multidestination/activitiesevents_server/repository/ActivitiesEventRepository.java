@@ -21,7 +21,7 @@ public interface ActivitiesEventRepository extends JpaRepository<ActivitiesEvent
             "AND u.username = ?2", nativeQuery = true)
     List<Long> getAllCitiesByUserName(Boolean isActive, String userName);
 
-    @Query(value = "select * from hotel_and_accomodation where is_active = ?1 cities_id in (?2)", nativeQuery = true)
+    @Query(value = "select * from activities_event where is_active = ?1 AND cities_id in (?2)", nativeQuery = true)
     List<ActivitiesEvent> getAllByCities(Boolean isActive, List<Long> cities);
 
     List<ActivitiesEvent> findAllByIsActive(Boolean isActive);

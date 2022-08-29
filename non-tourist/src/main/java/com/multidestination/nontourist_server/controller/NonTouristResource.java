@@ -32,7 +32,7 @@ public class NonTouristResource {
         this.nonTouristRepository = nonTouristRepository;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
+//    @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
     @PostMapping("/non-tourists")
     public ResponseEntity<NonTourist> createNonTourist(@RequestBody NonTourist nonTourist) throws URISyntaxException {
         log.debug("REST request to save NonTourist : {}", nonTourist);

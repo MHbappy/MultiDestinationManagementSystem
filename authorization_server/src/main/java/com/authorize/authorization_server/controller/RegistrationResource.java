@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -39,4 +41,11 @@ public class RegistrationResource {
         Users savedUser = usersRepository.save(users);
         return savedUser;
     }
+
+    @GetMapping("/user-list")
+    public List<Users> usersList(){
+        return usersRepository.findAll();
+    }
+
+
 }
