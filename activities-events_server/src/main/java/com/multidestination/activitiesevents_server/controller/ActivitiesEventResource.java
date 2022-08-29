@@ -74,7 +74,18 @@ public class ActivitiesEventResource {
     @GetMapping("/activities-events")
     public List<ActivitiesEvent> getAllActivitiesEvents() {
         log.debug("REST request to get all ActivitiesEvents");
-        return activitiesEventRepository.findAllByIsActive(true);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+        if (userName.equals("anonymousUser")){
+            return activitiesEventRepository.findAllByIsActive(true);
+        }
+
+        List<ActivitiesEvent> activitiesEvents = new ArrayList<>();
+        List<Long> cityList = activitiesEventRepository.getAllCitiesByUserName(true, userName);
+        if (cityList != null & cityList.size() > 0){
+            activitiesEvents = activitiesEventRepository.getAllByCities(true, cityList);
+        }
+        return activitiesEvents;
     }
 
 
@@ -87,14 +98,12 @@ public class ActivitiesEventResource {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/activities-events/{id}")
-    public ResponseEntity<Void> deleteActivitiesEvent(@PathVariable Long id) {
+    public ResponseEntity<Boolean> deleteActivitiesEvent(@PathVariable Long id) {
         log.debug("REST request to delete ActivitiesEvent : {}", id);
         Optional<ActivitiesEvent> activitiesEvent = activitiesEventRepository.findById(id);
         activitiesEvent.get().setIsActive(false);
         activitiesEventRepository.save(activitiesEvent.get());
-        return ResponseEntity
-                .noContent()
-                .build();
+        return ResponseEntity.ok(true);
     }
 
     @PostMapping("/user-reservation")

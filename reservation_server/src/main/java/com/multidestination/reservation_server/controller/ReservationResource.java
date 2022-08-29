@@ -82,11 +82,10 @@ public class ReservationResource {
     }
 
     @DeleteMapping("/reservations/{id}")
-    public ResponseEntity<Void> deleteReservation(@PathVariable Long id) {
+    public ResponseEntity<Boolean> deleteReservation(@PathVariable Long id) {
         log.debug("REST request to delete Reservation : {}", id);
         reservationRepository.deleteById(id);
-        return ResponseEntity
-            .noContent()
-            .build();
+
+        return ResponseEntity.ok(true);
     }
 }

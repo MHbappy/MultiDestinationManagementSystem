@@ -76,7 +76,19 @@ public class RestaurantsAndBarResource {
     @GetMapping("/restaurants-and-bars")
     public List<RestaurantsAndBar> getAllRestaurantsAndBars() {
         log.debug("REST request to get all RestaurantsAndBars");
-        return restaurantsAndBarRepository.findAllByIsActive(true);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+        if (userName.equals("anonymousUser")){
+            return restaurantsAndBarRepository.findAllByIsActive(true);
+        }
+
+        List<RestaurantsAndBar> restaurantsAndBars = new ArrayList<>();
+        List<Long> cityList = restaurantsAndBarRepository.getAllCitiesByUserName(userName, true);
+        if (cityList != null & cityList.size() > 0){
+            restaurantsAndBars = restaurantsAndBarRepository.getAllByCities(true, cityList);
+        }
+        return restaurantsAndBars;
     }
 
     @GetMapping("/restaurants-and-bars/{id}")
@@ -88,17 +100,13 @@ public class RestaurantsAndBarResource {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/restaurants-and-bars/{id}")
-    public ResponseEntity<Void> deleteRestaurantsAndBar(@PathVariable Long id) {
+    public ResponseEntity<Boolean> deleteRestaurantsAndBar(@PathVariable Long id) {
         log.debug("REST request to delete RestaurantsAndBar : {}", id);
 
         Optional<RestaurantsAndBar> restaurantsAndBar = restaurantsAndBarRepository.findById(id);
         restaurantsAndBar.get().setIsActive(false);
         restaurantsAndBarRepository.save(restaurantsAndBar.get());
-
-//      restaurantsAndBarRepository.deleteById(id);
-        return ResponseEntity
-            .noContent()
-            .build();
+        return ResponseEntity.ok(true);
     }
 
     @GetMapping("/restaurants-and-bars-with-cities")

@@ -74,7 +74,18 @@ public class HotelAndAccomodationResource {
     @GetMapping("/hotel-and-accomodations")
     public List<HotelAndAccomodation> getAllHotelAndAccomodations() {
         log.debug("REST request to get all Hotel And Accomodations");
-        return hotelAndAccomodationRepository.findAllByIsActive(true);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+
+        if (userName.equals("anonymousUser")){
+            return hotelAndAccomodationRepository.findAllByIsActive(true);
+        }
+        List<HotelAndAccomodation> hotelAndAccomodations = new ArrayList<>();
+        List<Long> cityList = hotelAndAccomodationRepository.getAllCitiesByUserName(userName, true);
+        if (cityList != null & cityList.size() > 0){
+            hotelAndAccomodations = hotelAndAccomodationRepository.getAllByCities(true, cityList);
+        }
+        return hotelAndAccomodations;
     }
 
     @GetMapping("/hotel-and-accomodations-with-cities")
@@ -98,7 +109,7 @@ public class HotelAndAccomodationResource {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/hotel-and-accomodations/{id}")
-    public ResponseEntity<Void> deleteHotelAndAccomodation(@PathVariable Long id) {
+    public ResponseEntity<Boolean> deleteHotelAndAccomodation(@PathVariable Long id) {
         log.debug("REST request to delete HotelAndAccomodation : {}", id);
 
         Optional<HotelAndAccomodation> hotelAndAccomodation = hotelAndAccomodationRepository.findById(id);
@@ -107,8 +118,6 @@ public class HotelAndAccomodationResource {
 //        HotelAndAccomodation result = hotelAndAccomodationRepository.save(hotelAndAccomodation);
 
 //        hotelAndAccomodationRepository.deleteById(id);
-        return ResponseEntity
-                .noContent()
-                .build();
+        return ResponseEntity.ok(true);
     }
 }

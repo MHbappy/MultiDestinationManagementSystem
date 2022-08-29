@@ -81,11 +81,9 @@ public class RatingResource {
     }
 
     @DeleteMapping("/ratings/{id}")
-    public ResponseEntity<Void> deleteRating(@PathVariable Long id) {
+    public ResponseEntity<Boolean> deleteRating(@PathVariable Long id) {
         log.debug("REST request to delete Rating : {}", id);
         ratingRepository.deleteById(id);
-        return ResponseEntity
-            .noContent()
-            .build();
+        return ResponseEntity.ok(true);
     }
 }

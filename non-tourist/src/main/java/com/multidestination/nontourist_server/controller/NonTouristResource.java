@@ -84,12 +84,10 @@ public class NonTouristResource {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/non-tourists/{id}")
-    public ResponseEntity<Void> deleteNonTourist(@PathVariable Long id) {
+    public ResponseEntity<Boolean> deleteNonTourist(@PathVariable Long id) {
         log.debug("REST request to delete NonTourist : {}", id);
         nonTouristRepository.deleteById(id);
-        return ResponseEntity
-            .noContent()
-            .build();
+        return ResponseEntity.ok(true);
     }
 
 

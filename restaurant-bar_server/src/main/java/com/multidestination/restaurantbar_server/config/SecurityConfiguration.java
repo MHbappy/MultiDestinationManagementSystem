@@ -3,6 +3,7 @@ package com.multidestination.restaurantbar_server.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -38,8 +39,8 @@ public class SecurityConfiguration extends ResourceServerConfigurerAdapter {
         http.anonymous()
                 .and()
                 .authorizeRequests()
+                .antMatchers(HttpMethod.GET, "/api/restaurants-and-bars").permitAll()
                 .antMatchers(
-                        "/api/restaurants-and-bars",
                         "/api/cities-list",
                         "/v2/api-docs",
                         "/swagger-resources/**",
