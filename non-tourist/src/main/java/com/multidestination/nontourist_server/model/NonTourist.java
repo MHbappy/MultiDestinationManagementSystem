@@ -28,6 +28,8 @@ public class NonTourist {
     @Column(name = "hours_of_operation")
     private Integer hoursOfOperation;
 
+    private Boolean isActive;
+
     @ManyToOne
     private Cities cities;
 }

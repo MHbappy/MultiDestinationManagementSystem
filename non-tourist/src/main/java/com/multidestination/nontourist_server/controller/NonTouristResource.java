@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -72,7 +70,22 @@ public class NonTouristResource {
     @GetMapping("/non-tourists")
     public List<NonTourist> getAllNonTourists() {
         log.debug("REST request to get all NonTourists");
-        return nonTouristRepository.findAll();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+
+        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
+        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
+
+        if (userName.equals("anonymousUser") || isAdminOrManager){
+            return nonTouristRepository.findAllByIsActive(true);
+        }
+
+        List<NonTourist> tourists = new ArrayList<>();
+        List<Long> cityList = nonTouristRepository.getAllCitiesByUserName(userName, true);
+        if (cityList != null & cityList.size() > 0){
+            tourists = nonTouristRepository.getAllByCities(true, cityList);
+        }
+        return tourists;
     }
 
     @GetMapping("/non-tourists/{id}")
@@ -86,7 +99,11 @@ public class NonTouristResource {
     @DeleteMapping("/non-tourists/{id}")
     public ResponseEntity<Boolean> deleteNonTourist(@PathVariable Long id) {
         log.debug("REST request to delete NonTourist : {}", id);
-        nonTouristRepository.deleteById(id);
+//        nonTouristRepository.deleteById(id);
+
+        Optional<NonTourist> nonTourist = nonTouristRepository.findById(id);
+        nonTourist.get().setIsActive(false);
+        nonTouristRepository.save(nonTourist.get());
         return ResponseEntity.ok(true);
     }
 
@@ -97,9 +114,9 @@ public class NonTouristResource {
         String userName = auth.getName();
 
         List<NonTourist> restaurantsAndBars = new ArrayList<>();
-        List<Long> cityList = nonTouristRepository.getAllCitiesByUserName(userName);
+        List<Long> cityList = nonTouristRepository.getAllCitiesByUserName(userName, true);
         if (cityList != null & cityList.size() > 0){
-            restaurantsAndBars = nonTouristRepository.getAllByCities(cityList);
+            restaurantsAndBars = nonTouristRepository.getAllByCities(true, cityList);
         }
         return restaurantsAndBars;
     }

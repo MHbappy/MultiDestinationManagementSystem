@@ -4,7 +4,9 @@ import com.multidestination.activitiesevents_server.domain.Rating;
 import com.multidestination.activitiesevents_server.domain.RatingRequest;
 import com.multidestination.activitiesevents_server.domain.Reservation;
 import com.multidestination.activitiesevents_server.model.ActivitiesEvent;
+import com.multidestination.activitiesevents_server.model.BackGroundImage;
 import com.multidestination.activitiesevents_server.repository.ActivitiesEventRepository;
+import com.multidestination.activitiesevents_server.repository.BackGroundImageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -27,9 +30,11 @@ public class ActivitiesEventResource {
 
     private final Logger log = LoggerFactory.getLogger(ActivitiesEventResource.class);
     private final ActivitiesEventRepository activitiesEventRepository;
+    private final BackGroundImageRepository backGroundImageRepository;
 
-    public ActivitiesEventResource(ActivitiesEventRepository activitiesEventRepository) {
+    public ActivitiesEventResource(ActivitiesEventRepository activitiesEventRepository, BackGroundImageRepository backGroundImageRepository) {
         this.activitiesEventRepository = activitiesEventRepository;
+        this.backGroundImageRepository = backGroundImageRepository;
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')")
@@ -76,7 +81,10 @@ public class ActivitiesEventResource {
         log.debug("REST request to get all ActivitiesEvents");
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName = auth.getName();
-        if (userName.equals("anonymousUser")){
+        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
+        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
+
+        if (userName.equals("anonymousUser") || isAdminOrManager){
             return activitiesEventRepository.findAllByIsActive(true);
         }
 
@@ -170,10 +178,24 @@ public class ActivitiesEventResource {
         return activitiesEvents;
     }
 
+    @PostMapping("/save-image")
+    public BackGroundImage saveBackGroundImage(BackGroundImage backGroundImage){
+        backGroundImage.setId(1l);
+        return backGroundImageRepository.save(backGroundImage);
+    }
+
+    @GetMapping("/get-image")
+    public Optional<BackGroundImage> getImages(){
+        return backGroundImageRepository.findById(1l);
+    }
+
     public Long getUserIdFromUserName(){
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         String username = loggedInUser.getName();
         Long userId = activitiesEventRepository.getUserIdByUserName(username);
         return userId;
     }
+
+
+
 }

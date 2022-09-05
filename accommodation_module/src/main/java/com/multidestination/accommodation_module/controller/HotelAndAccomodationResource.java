@@ -14,10 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -77,7 +75,10 @@ public class HotelAndAccomodationResource {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName = auth.getName();
 
-        if (userName.equals("anonymousUser")){
+        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
+        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
+
+        if (userName.equals("anonymousUser") || isAdminOrManager){
             return hotelAndAccomodationRepository.findAllByIsActive(true);
         }
         List<HotelAndAccomodation> hotelAndAccomodations = new ArrayList<>();
