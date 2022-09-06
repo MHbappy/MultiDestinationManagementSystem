@@ -37,6 +37,7 @@ public class NonTouristResource {
         if (nonTourist.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new activitiesEvent cannot already have an ID");
         }
+        nonTourist.setIsActive(true);
         NonTourist result = nonTouristRepository.save(nonTourist);
         return ResponseEntity
             .created(new URI("/api/non-tourists/" + result.getId()))

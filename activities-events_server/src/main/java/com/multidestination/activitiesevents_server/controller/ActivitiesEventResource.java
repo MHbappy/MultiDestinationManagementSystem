@@ -148,6 +148,7 @@ public class ActivitiesEventResource {
         rating.setUserId(getUserIdFromUserName());
         rating.setComment(ratingRequest.getComment() != null ? ratingRequest.getComment() : "");
         rating.setScore(ratingRequest.getScore() != null ? ratingRequest.getScore() : 0);
+        rating.setReservationId(ratingRequest.getReservationId() != null ? ratingRequest.getReservationId() : 0);
         String randomServerPort = "8083";
         final String baseUrl = "http://localhost:"+randomServerPort+"/api/ratings";
         ResponseEntity<Rating> result = new RestTemplate().postForEntity(baseUrl, rating, Rating.class);
@@ -179,14 +180,16 @@ public class ActivitiesEventResource {
     }
 
     @PostMapping("/save-image")
-    public BackGroundImage saveBackGroundImage(BackGroundImage backGroundImage){
-        backGroundImage.setId(1l);
+    public BackGroundImage saveBackGroundImage(@RequestBody BackGroundImage backGroundImage){
+//        backGroundImage.setId(1l);
+        backGroundImageRepository.deleteAllInBatch();
         return backGroundImageRepository.save(backGroundImage);
     }
 
     @GetMapping("/get-image")
-    public Optional<BackGroundImage> getImages(){
-        return backGroundImageRepository.findById(1l);
+    public BackGroundImage getImages(){
+        List<BackGroundImage> backGroundImages = backGroundImageRepository.findAll();
+        return backGroundImages != null & backGroundImages.size() > 0 ? backGroundImages.get(0) : null;
     }
 
     public Long getUserIdFromUserName(){

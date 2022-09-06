@@ -24,7 +24,7 @@ public class RestaurantsAndBar {
     private Double price;
 
     @Column(name = "operation_hour")
-    private Integer operationHour;
+    private String operationHour;
 
     @Column(name = "address")
     private String address;
@@ -39,8 +39,9 @@ public class RestaurantsAndBar {
     @Column(name = "photo_content_type")
     private String photoContentType;
 
+    @Lob
     @Column(name = "menu")
-    private String menu;
+    private byte[] menu;
 
     @Column(name = "type_of_food")
     private String typeOfFood;
