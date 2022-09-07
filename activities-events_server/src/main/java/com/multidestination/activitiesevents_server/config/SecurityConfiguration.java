@@ -46,6 +46,7 @@ public class SecurityConfiguration extends ResourceServerConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/api/activities-events").permitAll()
                 .antMatchers(
+                        "/api/ratings-by-reservation-id/**",
                         "/api/get-image/**",
                         "/api/ratings-by-reservation-id/**",
                         "/v2/api-docs",
