@@ -166,6 +166,22 @@ public class ActivitiesEventResource {
         return reservations;
     }
 
+
+
+
+    @GetMapping("/ratings-by-userid")
+    public List<Rating> getAllRatingsByUser(){
+
+//        getUserIdFromUserName();
+//        reservation.setUserId(getUserIdFromUserName());
+        Long userID = getUserIdFromUserName();
+        String randomServerPort = "8083";
+        final String baseUrl = "http://localhost:"+randomServerPort+"/api/ratings-by-user-id/" + userID;
+        Rating[] result = new RestTemplate().getForObject(baseUrl, Rating[].class);
+        List<Rating> reservations= Arrays.asList(result);
+        return reservations;
+    }
+
     @GetMapping("/activities-events-with-cities")
     public List<ActivitiesEvent> getAllHotelAndAccomodationsByCities() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

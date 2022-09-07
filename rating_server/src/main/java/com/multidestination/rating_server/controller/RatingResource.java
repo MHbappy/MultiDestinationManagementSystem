@@ -73,6 +73,12 @@ public class RatingResource {
         return ratingRepository.findAllByReservationId(reservationId);
     }
 
+
+    @GetMapping("/ratings-by-user-id/{userId}")
+    public List<Rating> getAllRatingsByUserID(@PathVariable Long userId) {
+        return ratingRepository.findAllByUserId(userId);
+    }
+
     @GetMapping("/ratings/{id}")
     public ResponseEntity<Rating> getRating(@PathVariable Long id) {
         log.debug("REST request to get Rating : {}", id);
