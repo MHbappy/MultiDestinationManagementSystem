@@ -16,7 +16,7 @@ public interface NonTouristRepository extends JpaRepository<NonTourist, Long> {
             "AND u.username = ?1 AND c.is_active = ?2", nativeQuery = true)
     List<Long> getAllCitiesByUserName(String userName, Boolean isActive);
 
-    @Query(value = "select * from hotel_and_accomodation where is_active = ?1 AND cities_id in (?2)", nativeQuery = true)
+    @Query(value = "select * from non_tourist where is_active = ?1 AND cities_id in (?2)", nativeQuery = true)
     List<NonTourist> getAllByCities(Boolean isActive, List<Long> cities);
 
     List<NonTourist> findAllByIsActive(Boolean isActive);
