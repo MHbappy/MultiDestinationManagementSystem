@@ -12,7 +12,7 @@ public class UsersService {
     @Autowired
     UsersRepository usersRepository;
 
-    Optional<Users> findByUsername(String email) {
+    public Optional<Users> findByUsername(String email) {
         return usersRepository.findByUsername(email);
     }
 }
