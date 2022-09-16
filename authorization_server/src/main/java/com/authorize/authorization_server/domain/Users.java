@@ -42,11 +42,11 @@ public class Users {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
         private Set<Roles> roles = new HashSet<>();
 
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_cities",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "cities_id"))
-    private Set<Cities> cities = new HashSet<>();
+//
+//    @ManyToMany(fetch = FetchType.EAGER)
+//    @JoinTable(name = "user_cities",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "cities_id"))
+//    private Set<Destination> cities = new HashSet<>();
 }
 

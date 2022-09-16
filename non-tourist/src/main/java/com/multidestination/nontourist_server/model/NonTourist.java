@@ -31,5 +31,9 @@ public class NonTourist {
     private Boolean isActive;
 
     @ManyToOne
-    private Cities cities;
+    private Location location;
+
+    private Boolean isApproved;
+
+    private String createdBy;
 }

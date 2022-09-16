@@ -34,9 +34,16 @@ public class NonTouristResource {
     @PostMapping("/non-tourists")
     public ResponseEntity<NonTourist> createNonTourist(@RequestBody NonTourist nonTourist) throws URISyntaxException {
         log.debug("REST request to save NonTourist : {}", nonTourist);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+
         if (nonTourist.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new activitiesEvent cannot already have an ID");
         }
+
+        nonTourist.setCreatedBy(userName);
+        nonTourist.setIsApproved(false);
         nonTourist.setIsActive(true);
         NonTourist result = nonTouristRepository.save(nonTourist);
         return ResponseEntity
@@ -49,8 +56,16 @@ public class NonTouristResource {
     public ResponseEntity<NonTourist> updateNonTourist(
         @PathVariable(value = "id", required = false) final Long id,
         @RequestBody NonTourist nonTourist
-    ) throws URISyntaxException {
+    ) {
         log.debug("REST request to update NonTourist : {}, {}", id, nonTourist);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+
+        if (nonTourist.getCreatedBy() != null && !nonTourist.getCreatedBy().equals(userName)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not permitted for edit!");
+        }
+
         if (nonTourist.getId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid id");
         }
@@ -82,9 +97,9 @@ public class NonTouristResource {
         }
 
         List<NonTourist> tourists = new ArrayList<>();
-        List<Long> cityList = nonTouristRepository.getAllCitiesByUserName(userName, true);
-        if (cityList != null & cityList.size() > 0){
-            tourists = nonTouristRepository.getAllByCities(true, cityList);
+        List<Long> locationList = nonTouristRepository.getAllLocationByDestination();
+        if (locationList != null & locationList.size() > 0){
+            tourists = nonTouristRepository.getAllByLocation(true, locationList);
         }
         return tourists;
     }
@@ -108,16 +123,26 @@ public class NonTouristResource {
         return ResponseEntity.ok(true);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/non-tourists/approve/{id}")
+    public ResponseEntity<Boolean> approveNonTourist(@PathVariable Long id) {
+        log.debug("REST request to delete NonTourist : {}", id);
+        Optional<NonTourist> nonTourist = nonTouristRepository.findById(id);
+        nonTourist.get().setIsApproved(true);
+        nonTouristRepository.save(nonTourist.get());
+        return ResponseEntity.ok(true);
+    }
 
-    @GetMapping("/non-tourists-with-cities")
-    public List<NonTourist> getAllHotelAndAccomodationsByCities() {
+
+    @GetMapping("/non-tourists-with-destination")
+    public List<NonTourist> getAllHotelAndAccomodationsByLocations() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName = auth.getName();
 
         List<NonTourist> restaurantsAndBars = new ArrayList<>();
-        List<Long> cityList = nonTouristRepository.getAllCitiesByUserName(userName, true);
-        if (cityList != null & cityList.size() > 0){
-            restaurantsAndBars = nonTouristRepository.getAllByCities(true, cityList);
+        List<Long> destinationList = nonTouristRepository.getAllLocationByDestination();
+        if (destinationList != null & destinationList.size() > 0){
+            restaurantsAndBars = nonTouristRepository.getAllByLocation(true, destinationList);
         }
         return restaurantsAndBars;
     }

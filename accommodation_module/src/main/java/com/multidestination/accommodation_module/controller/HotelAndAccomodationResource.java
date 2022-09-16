@@ -37,7 +37,12 @@ public class HotelAndAccomodationResource {
         if (hotelAndAccomodation.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new activitiesEvent cannot already have an ID");
         }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+
         hotelAndAccomodation.setIsActive(true);
+        hotelAndAccomodation.setIsApproved(false);
+        hotelAndAccomodation.setCreatedBy(userName);
         HotelAndAccomodation result = hotelAndAccomodationRepository.save(hotelAndAccomodation);
         return ResponseEntity
                 .created(new URI("/api/hotel-and-accomodations/" + result.getId()))
@@ -51,6 +56,14 @@ public class HotelAndAccomodationResource {
             @RequestBody HotelAndAccomodation hotelAndAccomodation
     ) throws URISyntaxException {
         log.debug("REST request to update HotelAndAccomodation : {}, {}", id, hotelAndAccomodation);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+
+        if (hotelAndAccomodation.getCreatedBy() != null && !hotelAndAccomodation.getCreatedBy().equals(userName)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not permitted for edit!");
+        }
+
         if (hotelAndAccomodation.getId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid id");
         }
@@ -62,7 +75,6 @@ public class HotelAndAccomodationResource {
         }
 
         hotelAndAccomodation.setIsActive(true);
-
         HotelAndAccomodation result = hotelAndAccomodationRepository.save(hotelAndAccomodation);
         return ResponseEntity
                 .ok()
@@ -82,9 +94,9 @@ public class HotelAndAccomodationResource {
             return hotelAndAccomodationRepository.findAllByIsActive(true);
         }
         List<HotelAndAccomodation> hotelAndAccomodations = new ArrayList<>();
-        List<Long> cityList = hotelAndAccomodationRepository.getAllCitiesByUserName(userName, true);
+        List<Long> cityList = hotelAndAccomodationRepository.getAllLocationByDestination();
         if (cityList != null & cityList.size() > 0){
-            hotelAndAccomodations = hotelAndAccomodationRepository.getAllByCities(true, cityList);
+            hotelAndAccomodations = hotelAndAccomodationRepository.getAllByLocation(true, cityList);
         }
         return hotelAndAccomodations;
     }
@@ -94,9 +106,9 @@ public class HotelAndAccomodationResource {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName = auth.getName();
         List<HotelAndAccomodation> hotelAndAccomodations = new ArrayList<>();
-        List<Long> cityList = hotelAndAccomodationRepository.getAllCitiesByUserName(userName, true);
+        List<Long> cityList = hotelAndAccomodationRepository.getAllLocationByDestination();
         if (cityList != null & cityList.size() > 0){
-            hotelAndAccomodations = hotelAndAccomodationRepository.getAllByCities(true, cityList);
+            hotelAndAccomodations = hotelAndAccomodationRepository.getAllByLocation(true, cityList);
         }
         return hotelAndAccomodations;
     }
@@ -119,6 +131,18 @@ public class HotelAndAccomodationResource {
 //        HotelAndAccomodation result = hotelAndAccomodationRepository.save(hotelAndAccomodation);
 
 //        hotelAndAccomodationRepository.deleteById(id);
+        return ResponseEntity.ok(true);
+    }
+
+
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/hotel-and-accomodations/approve/{id}")
+    public ResponseEntity<Boolean> deleteHotelAndAccomodationApprove(@PathVariable Long id) {
+        log.debug("REST request to delete HotelAndAccomodation : {}", id);
+        Optional<HotelAndAccomodation> hotelAndAccomodation = hotelAndAccomodationRepository.findById(id);
+        hotelAndAccomodation.get().setIsApproved(true);
+        hotelAndAccomodationRepository.save(hotelAndAccomodation.get());
         return ResponseEntity.ok(true);
     }
 }

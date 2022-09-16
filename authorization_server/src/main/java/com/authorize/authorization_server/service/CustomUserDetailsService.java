@@ -1,6 +1,6 @@
 package com.authorize.authorization_server.service;
 
-import com.authorize.authorization_server.domain.Cities;
+import com.authorize.authorization_server.domain.Destination;
 import com.authorize.authorization_server.domain.Users;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,22 +30,29 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         Optional<Users> optionalUser = usersService.findByUsername(s);
 
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+//        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 //
 //        log.info("additional_param: " + request.getParameter("city"));
 
-        String city = request.getParameter("city");
-        if (city == null || city.isEmpty()){
-            throw new UsernameNotFoundException("Parameter city not found");
-        }
+        //String city = request.getParameter("city");
+//        if (city == null || city.isEmpty()){
+//            throw new UsernameNotFoundException("Parameter city not found");
+//        }
 
-        Set<Cities> cities = optionalUser.get() != null ?  optionalUser.get().getCities() : new HashSet<>();
-        for (Cities cit: cities) {
-            log.info(cit.getName());
-            if (!cit.getName().equals(city)){
-                throw new UsernameNotFoundException("City is not found");
-            }
-        }
+//        Set<Destination> cities = optionalUser.get() != null ?  optionalUser.get().getCities() : new HashSet<>();
+//        boolean isCityexits = false;
+//        for (Destination cit: cities) {
+//            log.info(cit.getName());
+//            if (cit.getName().equals(city)){
+//                isCityexits = true;
+//                //throw new UsernameNotFoundException("City is not found");
+//                break;
+//            }
+//        }
+//
+//        if (!isCityexits){
+//            throw new UsernameNotFoundException("City is not found");
+//        }
 
         optionalUser.orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return new CustomUserDetails(optionalUser.get());

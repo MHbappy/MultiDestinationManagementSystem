@@ -1,4 +1,4 @@
-package com.multidestination.restaurantbar_server.model;
+package com.multidestination.locationserver.domain;
 
 import lombok.Data;
 
@@ -7,14 +7,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name = "cities")
+@Entity(name = "location")
 @Data
-public class Cities {
+public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     String name;
 
-    Boolean isActive;
+    boolean isActive;
+
 }

@@ -47,7 +47,11 @@ public class RestaurantsAndBar {
     private String typeOfFood;
 
     @ManyToOne
-    private Cities cities;
+    private Location location;
 
     private Boolean isActive;
+
+    private Boolean isApproved;
+
+    private String createdBy;
 }

@@ -2,14 +2,13 @@ package com.authorize.authorization_server.domain;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
-@Entity(name = "cities")
+@Entity(name = "location")
 @Data
-public class Cities {
+public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,5 +16,4 @@ public class Cities {
     String name;
 
     boolean isActive;
-
 }

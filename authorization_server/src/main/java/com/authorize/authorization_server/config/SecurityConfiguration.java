@@ -43,22 +43,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         httpSecurity.csrf().disable();
 //        httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        httpSecurity.csrf().ignoringAntMatchers("/registration/**", "/user-list/**").and().anonymous()
+        httpSecurity.csrf().ignoringAntMatchers("/registration/**", "/registration-manager/**", "/user-list/**", "/api/destination/**", "/api/destination-list/**").and().anonymous()
                 .and()
                 .authorizeRequests()
                 .antMatchers(
                         "/v2/api-docs",
                         "/swagger-resources/**",
                         "/swagger-ui/**",
-                        "/webjars/**", "/registration/**", "/user-list/**" )
+                        "/webjars/**", "/registration/**", "/registration-manager/**", "/user-list/**", "/api/destination/**", "/api/destination-list/**" )
                 .permitAll().anyRequest().authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         httpSecurity.httpBasic();
-
-
 
     }
 

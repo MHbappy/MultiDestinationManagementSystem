@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 public class RestaurantsAndBarResource {
 
     private final Logger log = LoggerFactory.getLogger(RestaurantsAndBarResource.class);
-
     private final RestaurantsAndBarRepository restaurantsAndBarRepository;
 
     public RestaurantsAndBarResource(RestaurantsAndBarRepository restaurantsAndBarRepository) {
@@ -35,11 +34,17 @@ public class RestaurantsAndBarResource {
     @PostMapping("/restaurants-and-bars")
     public ResponseEntity<RestaurantsAndBar> createRestaurantsAndBar(@RequestBody RestaurantsAndBar restaurantsAndBar)
         throws URISyntaxException {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+
         log.debug("REST request to save RestaurantsAndBar : {}", restaurantsAndBar);
         if (restaurantsAndBar.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new activitiesEvent cannot already have an ID");
         }
 
+        restaurantsAndBar.setIsApproved(false);
+        restaurantsAndBar.setCreatedBy(userName);
         restaurantsAndBar.setIsActive(true);
         RestaurantsAndBar result = restaurantsAndBarRepository.save(restaurantsAndBar);
         return ResponseEntity
@@ -53,7 +58,17 @@ public class RestaurantsAndBarResource {
         @PathVariable(value = "id", required = false) final Long id,
         @RequestBody RestaurantsAndBar restaurantsAndBar
     ) throws URISyntaxException {
+
         log.debug("REST request to update RestaurantsAndBar : {}, {}", id, restaurantsAndBar);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+
+        if (restaurantsAndBar.getCreatedBy() != null && !restaurantsAndBar.getCreatedBy().equals(userName)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You are not permitted for edit!");
+        }
+
+
         if (restaurantsAndBar.getId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid id");
         }
@@ -64,6 +79,7 @@ public class RestaurantsAndBarResource {
         if (!restaurantsAndBarRepository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Entity not found");
         }
+
         restaurantsAndBar.setIsActive(true);
         RestaurantsAndBar result = restaurantsAndBarRepository.save(restaurantsAndBar);
         return ResponseEntity
@@ -86,9 +102,9 @@ public class RestaurantsAndBarResource {
         }
 
         List<RestaurantsAndBar> restaurantsAndBars = new ArrayList<>();
-        List<Long> cityList = restaurantsAndBarRepository.getAllCitiesByUserName(userName, true);
+        List<Long> cityList = restaurantsAndBarRepository.getAllLocationByDestination();
         if (cityList != null & cityList.size() > 0){
-            restaurantsAndBars = restaurantsAndBarRepository.getAllByCities(true, cityList);
+            restaurantsAndBars = restaurantsAndBarRepository.getAllByLocation(true, cityList);
         }
         return restaurantsAndBars;
     }
@@ -111,15 +127,27 @@ public class RestaurantsAndBarResource {
         return ResponseEntity.ok(true);
     }
 
-    @GetMapping("/restaurants-and-bars-with-cities")
-    public List<RestaurantsAndBar> getAllHotelAndAccomodationsByCities() {
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/restaurants-and-bars/approve/{id}")
+    public ResponseEntity<Boolean> approveRestaurantsAndBar(@PathVariable Long id) {
+        log.debug("REST request to delete RestaurantsAndBar : {}", id);
+
+        Optional<RestaurantsAndBar> restaurantsAndBar = restaurantsAndBarRepository.findById(id);
+        restaurantsAndBar.get().setIsApproved(false);
+        restaurantsAndBarRepository.save(restaurantsAndBar.get());
+        return ResponseEntity.ok(true);
+    }
+
+    @GetMapping("/restaurants-and-bars-with-location")
+    public List<RestaurantsAndBar> getAllHotelAndAccomodationsByLocation() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String userName = auth.getName();
 
         List<RestaurantsAndBar> restaurantsAndBars = new ArrayList<>();
-        List<Long> cityList = restaurantsAndBarRepository.getAllCitiesByUserName(userName, true);
-        if (cityList != null & cityList.size() > 0){
-            restaurantsAndBars = restaurantsAndBarRepository.getAllByCities(true, cityList);
+        List<Long> locationList = restaurantsAndBarRepository.getAllLocationByDestination();
+        if (locationList != null & locationList.size() > 0){
+            restaurantsAndBars = restaurantsAndBarRepository.getAllByLocation(true, locationList);
         }
         return restaurantsAndBars;
     }

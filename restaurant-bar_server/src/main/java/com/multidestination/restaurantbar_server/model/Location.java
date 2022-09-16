@@ -1,4 +1,4 @@
-package com.multidestination.accommodation_module.model;
+package com.multidestination.restaurantbar_server.model;
 
 import lombok.Data;
 
@@ -7,9 +7,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity(name = "cities")
+@Entity(name = "location")
 @Data
-public class Cities {
+public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
