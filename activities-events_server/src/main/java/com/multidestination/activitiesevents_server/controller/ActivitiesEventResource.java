@@ -84,14 +84,14 @@ public class ActivitiesEventResource {
     @GetMapping("/activities-events")
     public List<ActivitiesEvent> getAllActivitiesEvents() {
         log.debug("REST request to get all ActivitiesEvents");
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        String userName = auth.getName();
-//        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
-//        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
-//
-//        if (userName.equals("anonymousUser") || isAdminOrManager){
-//            return activitiesEventRepository.findAllByIsActive(true);
-//        }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
+        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
+
+        if (userName.equals("anonymousUser") || isAdminOrManager){
+            return activitiesEventRepository.findAllByIsActive(true);
+        }
 
         List<ActivitiesEvent> activitiesEvents = new ArrayList<>();
         List<Long> cityList = activitiesEventRepository.getAllLocationByDestination();
