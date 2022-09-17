@@ -75,13 +75,12 @@ public class LocationController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/location/{id}")
-    public ResponseEntity<Void> deleteLocation(@PathVariable Long id) {
+    public ResponseEntity<Boolean> deleteLocation(@PathVariable Long id) {
         log.debug("REST request to delete location : {}", id);
         Optional<Location> location = locationRepository.findById(id);
         location.get().setActive(false);
-        return ResponseEntity
-                .noContent()
-                .build();
+
+        return ResponseEntity.ok(true);
     }
 
 }

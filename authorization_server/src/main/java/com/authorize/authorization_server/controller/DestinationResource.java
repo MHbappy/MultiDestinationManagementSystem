@@ -80,13 +80,11 @@ public class DestinationResource {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/destination/{id}")
-    public ResponseEntity<Void> deletedestination(@PathVariable Long id) {
+    public ResponseEntity<Boolean> deletedestination(@PathVariable Long id) {
         log.debug("REST request to delete destination : {}", id);
         Optional<Destination> destination = destinationRepository.findById(id);
         destination.get().setActive(false);
-        return ResponseEntity
-                .noContent()
-                .build();
+        return ResponseEntity.ok(true);
     }
 
 
