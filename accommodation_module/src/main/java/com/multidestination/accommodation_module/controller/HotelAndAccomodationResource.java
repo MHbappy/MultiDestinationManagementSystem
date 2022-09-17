@@ -84,15 +84,14 @@ public class HotelAndAccomodationResource {
     @GetMapping("/hotel-and-accomodations")
     public List<HotelAndAccomodation> getAllHotelAndAccomodations() {
         log.debug("REST request to get all Hotel And Accomodations");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName = auth.getName();
-
-        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
-        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
-
-        if (userName.equals("anonymousUser") || isAdminOrManager){
-            return hotelAndAccomodationRepository.findAllByIsActive(true);
-        }
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        String userName = auth.getName();
+//        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
+//        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
+//
+//        if (userName.equals("anonymousUser") || isAdminOrManager){
+//            return hotelAndAccomodationRepository.findAllByIsActive(true);
+//        }
         List<HotelAndAccomodation> hotelAndAccomodations = new ArrayList<>();
         List<Long> cityList = hotelAndAccomodationRepository.getAllLocationByDestination();
         if (cityList != null & cityList.size() > 0){

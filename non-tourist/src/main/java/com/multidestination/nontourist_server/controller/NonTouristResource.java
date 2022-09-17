@@ -86,15 +86,14 @@ public class NonTouristResource {
     @GetMapping("/non-tourists")
     public List<NonTourist> getAllNonTourists() {
         log.debug("REST request to get all NonTourists");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName = auth.getName();
-
-        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
-        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
-
-        if (userName.equals("anonymousUser") || isAdminOrManager){
-            return nonTouristRepository.findAllByIsActive(true);
-        }
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        String userName = auth.getName();
+//        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
+//        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
+//
+//        if (userName.equals("anonymousUser") || isAdminOrManager){
+//            return nonTouristRepository.findAllByIsActive(true);
+//        }
 
         List<NonTourist> tourists = new ArrayList<>();
         List<Long> locationList = nonTouristRepository.getAllLocationByDestination();

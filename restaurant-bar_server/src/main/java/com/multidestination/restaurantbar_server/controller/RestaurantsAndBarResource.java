@@ -91,15 +91,15 @@ public class RestaurantsAndBarResource {
     public List<RestaurantsAndBar> getAllRestaurantsAndBars() {
         log.debug("REST request to get all RestaurantsAndBars");
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName = auth.getName();
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        String userName = auth.getName();
 
-        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
-        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
+//        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
+//        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
 
-        if (userName.equals("anonymousUser") || isAdminOrManager){
-            return restaurantsAndBarRepository.findAllByIsActive(true);
-        }
+//        if (userName.equals("anonymousUser") || isAdminOrManager){
+//            return restaurantsAndBarRepository.findAllByIsActive(true);
+//        }
 
         List<RestaurantsAndBar> restaurantsAndBars = new ArrayList<>();
         List<Long> cityList = restaurantsAndBarRepository.getAllLocationByDestination();

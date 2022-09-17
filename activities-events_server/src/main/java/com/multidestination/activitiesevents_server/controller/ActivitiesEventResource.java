@@ -44,6 +44,11 @@ public class ActivitiesEventResource {
         if (activitiesEvent.getId() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A new activitiesEvent cannot already have an ID");
         }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String userName = auth.getName();
+
+        activitiesEvent.setIsApproved(false);
+        activitiesEvent.setCreatedBy(userName);
         activitiesEvent.setIsActive(true);
         ActivitiesEvent result = activitiesEventRepository.save(activitiesEvent);
         return ResponseEntity
@@ -79,19 +84,19 @@ public class ActivitiesEventResource {
     @GetMapping("/activities-events")
     public List<ActivitiesEvent> getAllActivitiesEvents() {
         log.debug("REST request to get all ActivitiesEvents");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String userName = auth.getName();
-        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
-        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
-
-        if (userName.equals("anonymousUser") || isAdminOrManager){
-            return activitiesEventRepository.findAllByIsActive(true);
-        }
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        String userName = auth.getName();
+//        Set<String> roles = auth.getAuthorities().stream().map(r -> r.getAuthority()).collect(Collectors.toSet());
+//        Boolean isAdminOrManager = (roles.contains("ROLE_ADMIN") || roles.contains("ROLE_MANAGER"));
+//
+//        if (userName.equals("anonymousUser") || isAdminOrManager){
+//            return activitiesEventRepository.findAllByIsActive(true);
+//        }
 
         List<ActivitiesEvent> activitiesEvents = new ArrayList<>();
-        List<Long> cityList = activitiesEventRepository.getAllCitiesByUserName(true, userName);
+        List<Long> cityList = activitiesEventRepository.getAllLocationByDestination();
         if (cityList != null & cityList.size() > 0){
-            activitiesEvents = activitiesEventRepository.getAllByCities(true, cityList);
+            activitiesEvents = activitiesEventRepository.getAllByLocation(true, cityList);
         }
         return activitiesEvents;
     }
@@ -110,6 +115,17 @@ public class ActivitiesEventResource {
         log.debug("REST request to delete ActivitiesEvent : {}", id);
         Optional<ActivitiesEvent> activitiesEvent = activitiesEventRepository.findById(id);
         activitiesEvent.get().setIsActive(false);
+        activitiesEventRepository.save(activitiesEvent.get());
+        return ResponseEntity.ok(true);
+    }
+
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/activities-events/approve/{id}")
+    public ResponseEntity<Boolean> approveActivitiesEvent(@PathVariable Long id) {
+        log.debug("REST request to delete ActivitiesEvent : {}", id);
+        Optional<ActivitiesEvent> activitiesEvent = activitiesEventRepository.findById(id);
+        activitiesEvent.get().setIsApproved(true);
         activitiesEventRepository.save(activitiesEvent.get());
         return ResponseEntity.ok(true);
     }
@@ -188,9 +204,9 @@ public class ActivitiesEventResource {
         String userName = auth.getName();
 
         List<ActivitiesEvent> activitiesEvents = new ArrayList<>();
-        List<Long> cityList = activitiesEventRepository.getAllCitiesByUserName(true, userName);
+        List<Long> cityList = activitiesEventRepository.getAllLocationByDestination();
         if (cityList != null & cityList.size() > 0){
-            activitiesEvents = activitiesEventRepository.getAllByCities(true, cityList);
+            activitiesEvents = activitiesEventRepository.getAllByLocation(true, cityList);
         }
         return activitiesEvents;
     }

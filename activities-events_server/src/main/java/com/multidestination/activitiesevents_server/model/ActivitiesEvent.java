@@ -46,7 +46,11 @@ public class ActivitiesEvent {
     private String photoContentType;
 
     @ManyToOne
-    private Cities cities;
+    private Location location;
 
     Boolean isActive;
+
+    private Boolean isApproved;
+
+    private String createdBy;
 }
