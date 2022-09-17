@@ -40,6 +40,13 @@ spring:
             - Path=/non-tourist/**
           filters:
             - StripPrefix=1
+        ##Location
+        - id: location
+          uri: lb://location
+          predicates:
+            - Path=/location/**
+          filters:
+            - StripPrefix=1
       globalcors:
         cors-configurations:
           '[/**]':
