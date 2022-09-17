@@ -134,7 +134,7 @@ public class RestaurantsAndBarResource {
         log.debug("REST request to delete RestaurantsAndBar : {}", id);
 
         Optional<RestaurantsAndBar> restaurantsAndBar = restaurantsAndBarRepository.findById(id);
-        restaurantsAndBar.get().setIsApproved(false);
+        restaurantsAndBar.get().setIsApproved(true);
         restaurantsAndBarRepository.save(restaurantsAndBar.get());
         return ResponseEntity.ok(true);
     }
