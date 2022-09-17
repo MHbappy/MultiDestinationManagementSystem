@@ -30,13 +30,16 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         Optional<Users> optionalUser = usersService.findByUsername(s);
 
-//        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-//
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 //        log.info("additional_param: " + request.getParameter("city"));
 
-        //String city = request.getParameter("city");
-//        if (city == null || city.isEmpty()){
-//            throw new UsernameNotFoundException("Parameter city not found");
+        String manager = request.getParameter("manager");
+
+        if (optionalUser.get().getRoles().stream().findFirst().get().equals("USER") && manager.equals("y")){
+            throw new UsernameNotFoundException("Your are not permited!");
+        }
+//        if (manager.equals("y")){
+//            throw new UsernameNotFoundException("Your are not permited!");
 //        }
 
 //        Set<Destination> cities = optionalUser.get() != null ?  optionalUser.get().getCities() : new HashSet<>();
