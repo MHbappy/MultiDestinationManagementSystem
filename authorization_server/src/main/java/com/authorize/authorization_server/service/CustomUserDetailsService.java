@@ -35,7 +35,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         String manager = request.getParameter("manager");
 
-        if (optionalUser.get().getRoles().stream().findFirst().get().equals("USER") && manager.equals("y")){
+       // String roleName = optionalUser.get().getRoles().stream().findFirst().get().getName();
+
+        if (optionalUser.get().getRoles().stream().findFirst().get().getName().toString().equals("USER") && manager.equals("y")){
             throw new UsernameNotFoundException("Your are not permited!");
         }
 //        if (manager.equals("y")){
