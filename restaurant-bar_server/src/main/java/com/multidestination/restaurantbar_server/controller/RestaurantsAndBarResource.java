@@ -129,7 +129,7 @@ public class RestaurantsAndBarResource {
 
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/restaurants-and-bars/approve/{id}")
+    @PostMapping("/restaurants-and-bars/approve/{id}")
     public ResponseEntity<Boolean> approveRestaurantsAndBar(@PathVariable Long id) {
         log.debug("REST request to delete RestaurantsAndBar : {}", id);
 
